@@ -170,3 +170,11 @@ Todo / other questions
  worth contributing" into a confident decision, and would reorder the feature list toward              
  correctness-first (labels/metadata) rather than performance-first.   
 
+# Next steps
+- also benchmark selecting rows/columns
+- run with different input files
+    - larger .sav
+    - .sas7bdat instead of .sav?
+- 
+
+
