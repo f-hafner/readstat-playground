@@ -10,3 +10,10 @@ podman:
 		-v $$(pwd)/results:/home/ubuntu/results \
 		-w /home/ubuntu/ \
 		--network=host playground
+
+duckdb-read-stat/build/debug/read_stat.duckdb_extension:
+	make -C duckdb-read-stat configure
+	make -C duckdb-read-stat debug
+
+bench:	duckdb-read-stat/build/debug/read_stat.duckdb_extension
+	bash src/bench/run.sh
