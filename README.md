@@ -140,7 +140,10 @@ and if they're read correctly.
         - not found in source code of duckdb read stat
         - see also `duckdb_init_get_column_count` and `duckdb_init_get_column_index` functions in duckdb
         - sqlite_scanner reference for projection pushdown: https://github.com/duckdb/duckdb-sqlite/blob/13119c01097c8030c09caab7f7f476967e0bd2db/src/sqlite_scanner.cpp#L436
-
+    - the `readstat` library uses the `READSTAT_HANDLER_SKIP_VARIABLE` return value for this
+        - usage in `haven`: https://github.com/tidyverse/haven/blob/f067fb27e436bc1207e8424f50df90ed9d5acc3a/src/DfReader.cpp#L196
+        - usage in `pyreadstat` (?): https://github.com/Roche/pyreadstat/blob/12cc1495d468ae8a170c57cce7557c147b972eac/pyreadstat/_readstat_parser.pyx#L507
+        - I don't find this being used in the duckdb extension
 Further ideas
 - Claude:
     - >.sav: rows are stored as a stateful compressed stream (bytecode/zlib compression, variable-width    
@@ -177,4 +180,5 @@ Todo / other questions
     - .sas7bdat instead of .sav?
 - 
 
-
+# Useful docs
+- Unofficial documentation of the `.sav` file format: https://www.gnu.org/software/pspp/pspp-dev/html_node/System-File-Format.html
