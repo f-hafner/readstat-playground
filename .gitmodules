@@ -1,0 +1,3 @@
+[submodule "duckdb-read-stat"]
+	path = duckdb-read-stat
+	url = git@github.com:f-hafner/duckdb-read-stat.git
