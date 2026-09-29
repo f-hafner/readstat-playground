@@ -1,6 +1,6 @@
 test_data := data/test_small.sav data/test_small.dta
 
-.PHONY: podman renv bench
+.PHONY: podman build renv bench
 
 podman:
 	podman build -t playground -f ./Dockerfile
@@ -16,6 +16,8 @@ podman:
 $(test_data): data/test_small.%:
 	mkdir -p data
 	uv run src/snake/create_stat_file.py --format $* 10000 -o $@
+
+build: duckdb-read-stat/build/debug/read_stat.duckdb_extension
 
 duckdb-read-stat/build/debug/read_stat.duckdb_extension:
 	make -C duckdb-read-stat configure
