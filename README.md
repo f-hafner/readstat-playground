@@ -3,10 +3,25 @@
 
 Playing around with `readstat` libraries.
 
+### Getting the source
+
+- Fresh clone
+  ```
+  git clone --recurse-submodules git@github.com:f-hafner/readstat-playground.git
+  ```
+
+- Update an existing checkout
+  ```
+  cd readstat-playground/
+  git submodule update --init --recursive
+  ```
+
 ### Installation
 
+You can work inside a podman container
+
 ```bash
-make
+make podman
 ```
 
 To connect to a running podman instance (and use htop):
@@ -14,76 +29,35 @@ To connect to a running podman instance (and use htop):
 podman exec -it readstat bash
 ```
 
-### Usage
+If you have uv, Python, R, and duckdb installed, you can also work in your normal system.
 
-1. Create test file 
+### Running the benchmark
 
-Inside the container:
+Run everything start to finish.
+
 ```
-uv run src/create_stat_file.py 1_000 -o test.sav
-```
-
-2. Read test file
-
-**`R`**
-
-```R
-library(haven)
-df = read_sav("test.sav")
-summary(df)
-head(df)
+make bench
 ```
 
-**`python`**
+Benchmark timing results are recorded in `results/bench.csv`.
+Subsequent runs append to the dataset.  You can also run intermediate
+steps individually:
 
-```bash
-uv run --with "pyreadstat,pandas" python
-```
+- Create test file 
+  ```
+  make data/test_small.sav
+  make data/test_small.dta
+  ```
 
-```python
-import pyreadstat
-df, meta = pyreadstat.read_sav("test.sav")
-df.head()
-df.describe() # note the difference to R
-```
+- Create the R environment
+  ```
+  make renv
+  ```
 
-**`DuckDB`**
-```sql
-INSTALL read_stat FROM community;
-LOAD read_stat;
-FROM read_stat('test.sav'); 
--- NULLs are correct; categorical labels not converted
-CREATE TABLE mytab as (FROM read_stat('test.sav'));
-```
-
-
-### Timing execution
-
-```bash
-uv run src/create_stat_file.py 10_000_000 -o test.sav
-
-uv run --with "ipython,pyreadstat,pandas" ipython
-```
-
-```python
-import pyreadstat
-%timeit df, meta = pyreadstat.read_sav("test.sav")
-```
-
-```R
-library(haven)
-library(tictoc)
-
-tic()
-read_sav("test.sav")
-toc()
-```
-
-Timings (10M obs)
-- python pyreadstat: 29s
-- duckdb: 25.7s. (1 vs 4 threads takes same amount of time.)
-- R haven: 86s
-
+- Build the extension
+  ```
+  make build
+  ```
 
 #### Reading in the `sas7bdat` file
 - All libraries support reading from this format. The `trial_data.sas7bdat` file
