@@ -1,4 +1,4 @@
-.PHONY: docker
+.PHONY: podman renv bench
 
 podman:
 	podman build -t playground -f ./Dockerfile
@@ -15,6 +15,10 @@ duckdb-read-stat/build/debug/read_stat.duckdb_extension:
 	make -C duckdb-read-stat configure
 	make -C duckdb-read-stat debug
 
-bench:	duckdb-read-stat/build/debug/read_stat.duckdb_extension
+renv:
+	Rscript -e 'd <- Sys.getenv("R_LIBS_USER"); dir.create(d, recursive = TRUE, showWarnings = FALSE); install.packages("renv", lib = d, repos = "https://cloud.r-project.org")'
+	Rscript -e 'renv::init()' # creates renv/ + .Rprofile + renv.lock
+
+bench:	duckdb-read-stat/build/debug/read_stat.duckdb_extension renv
 	mkdir -p results
 	bash src/bench/run.sh results/bench.csv
