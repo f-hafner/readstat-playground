@@ -16,4 +16,5 @@ duckdb-read-stat/build/debug/read_stat.duckdb_extension:
 	make -C duckdb-read-stat debug
 
 bench:	duckdb-read-stat/build/debug/read_stat.duckdb_extension
-	bash src/bench/run.sh
+	mkdir -p results
+	bash src/bench/run.sh results/bench.csv
