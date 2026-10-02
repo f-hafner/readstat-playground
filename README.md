@@ -18,18 +18,9 @@ Playing around with `readstat` libraries.
 
 ### Installation
 
-You can work inside a podman container
-
-```bash
-make podman
-```
-
-To connect to a running podman instance (and use htop):
-```bash
-podman exec -it readstat bash
-```
-
-If you have uv, Python, R, and duckdb installed, you can also work in your normal system.
+On your normal system, you need to install uv, Python, and R.  If
+duckdb is not available it is installed, but you can also install it
+yourself.
 
 ### Running the benchmark
 
@@ -52,6 +43,11 @@ steps individually:
 - Create the R environment
   ```
   make renv
+  ```
+
+- Remove the current R environment
+  ```
+  make clean-renv
   ```
 
 - Build the extension
