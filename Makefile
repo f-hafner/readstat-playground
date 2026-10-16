@@ -11,7 +11,7 @@ fi
 endef
 
 
-.PHONY: bench build install-duckdb clean-renv
+.PHONY: bench build install-duckdb clean-renv native native/skip-columns
 
 bench:	duckdb-read-stat/build/debug/read_stat.duckdb_extension data/test_small.sav install-duckdb renv
 	mkdir -p results
@@ -25,6 +25,18 @@ duckdb-read-stat/build/debug/read_stat.duckdb_extension:
 
 install-duckdb:
 	@$(call INSTALL_DUCKDB)
+
+native: native/skip-columns 
+
+duckdb-read-stat/configure/platform.txt:
+	make -C duckdb-read-stat configure
+
+duckdb-read-stat/build/debug/libread_stat.so: duckdb-read-stat/configure/platform.txt
+	make -C duckdb-read-stat debug
+
+native/skip-columns: duckdb-read-stat/build/debug/libread_stat.so data/test_small.dta
+	cmake -S src/native/skip-columns -B src/native/skip-columns/build
+	cmake --build src/native/skip-columns/build
 
 $(test_data): data/test_small.%:
 	mkdir -p data
