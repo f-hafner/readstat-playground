@@ -20,30 +20,15 @@ static int should_skip(const char *name, const struct MyConfig *cfg) {
     return 0;
 }
 
-
-int handle_metadata(readstat_metadata_t *metadata, void *ctx) {
-    //int *my_var_count = (int *)ctx; // cast ctx to 'pointer to int'
-    struct MyConfig *my_config = (struct MyConfig *)ctx;
-
-    //my_config->var_count = readstat_get_var_count(metadata);
-    //*my_var_count = readstat_get_var_count(metadata);
-    // Function currently not used anymore, but leave for now
-
-    return READSTAT_HANDLER_OK;
-}
-
 int handle_variable(int index, readstat_variable_t *variable, 
     const char *val_labels, void *ctx) {
     struct MyConfig *my_config = (struct MyConfig *)ctx;
-    //int *my_var_count = (int *)ctx;
 
     const char *var_name = readstat_variable_get_name(variable); 
 
     if (should_skip(var_name, my_config)) {
         return READSTAT_HANDLER_SKIP_VARIABLE;
     }
-    // Setting this here seems to imply that `handle_value` ignores the entire
-    // column? Since we're not setting anything in handle_value to skip.
     int var_index = readstat_variable_get_index_after_skipping(variable);
 
     if (var_index > 0) {
@@ -56,9 +41,7 @@ int handle_variable(int index, readstat_variable_t *variable,
 
 int handle_value(int obs_index, readstat_variable_t *variable, readstat_value_t value, void *ctx) {
     struct MyConfig *my_config = (struct MyConfig *)ctx;
-    //int *my_var_count = (int *)ctx;
     
-    //int var_index = readstat_variable_get_index(variable);
     int var_index = readstat_variable_get_index_after_skipping(variable);
     if (var_index == 0) {
         printf("\n");
@@ -66,7 +49,6 @@ int handle_value(int obs_index, readstat_variable_t *variable, readstat_value_t 
         printf("\t");
     }
 
-    // int var_index = readstat_variable_get_index_after_skipping(variable); // this does not work correctly
     readstat_type_t type = readstat_value_type(value);
     if (!readstat_value_is_system_missing(value)) { // print the value to console
         if (type == READSTAT_TYPE_STRING) {
@@ -101,7 +83,6 @@ int main(int argc, char *argv[]) {
     };
     readstat_error_t error = READSTAT_OK;
     readstat_parser_t *parser = readstat_parser_init();
-    readstat_set_metadata_handler(parser, &handle_metadata);
     readstat_set_variable_handler(parser, &handle_variable);
     readstat_set_value_handler(parser, &handle_value);
     readstat_set_row_limit(parser, 10);
