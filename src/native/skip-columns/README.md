@@ -37,5 +37,5 @@ cmake --build build
 From repo root:
 
 ```bash
-./src/native/skip-columns/build/skip-columns data/test.dta
+./src/native/skip-columns/build/skip-columns data/test_small.dta
 ```
