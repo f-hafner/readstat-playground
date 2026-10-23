@@ -1,0 +1,27 @@
+# AI Declaration Format (aidecl)
+# Use a role or team name rather than personal name if this file will be public
+
+schema_version: 1.0.0
+project:
+  name: readstat-playground
+  repository: git@github.com:f-hafner/readstat-playground.git
+  content_type: software
+ai_usage:
+  used: true
+  summary: |
+    - AI was used to generate code: for creating data, for running benchmarks, and
+    for CMakelists in subprojects in src/.
+    - AI was used to understand library codebases (duckdb, readstat)
+  level: minimal
+  tools:
+  - name: kimi-k3
+    vendor: opencode
+    type: agent
+    purpose:
+    - code analysis
+    - code generation
+  scope:
+    code_completion: true
+declaration:
+  date: '2026-10-16'
+  declared_by: Dr. Duck team member
