@@ -31,9 +31,19 @@ write_to_file <- function(results, file_name) {
 }
 
 
-time_read <- function() {
+time_read_all <- function() {
   tic()
   df <- haven::read_sav(in_file)
+  toc_out <- toc(quiet = TRUE)
+  elapsed <- unname(toc_out$toc - toc_out$tic)
+  log_info("read took %.4fs", elapsed)
+  elapsed
+}
+
+
+time_read_subset <- function() {
+  tic()
+  df <- haven::read_sav(in_file, col_select = c("wage", "person_id"))
   toc_out <- toc(quiet = TRUE)
   elapsed <- unname(toc_out$toc - toc_out$tic)
   log_info("read took %.4fs", elapsed)
@@ -44,7 +54,8 @@ time_read <- function() {
 main <- function(file_name) {
   log_info("language: R")
   benchmark_set <- list(
-    read = time_read
+    read_all = time_read_all,
+    read_subset = time_read_subset
   )
   log_info("running benchmarks: %s", paste(names(benchmark_set), collapse = ", "))
   results <- lapply(benchmark_set, function(fn) fn())
