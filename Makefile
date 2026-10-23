@@ -44,7 +44,7 @@ $(test_data): data/test_small.%:
 
 renv:
 	Rscript -e 'd <- Sys.getenv("R_LIBS_USER"); dir.create(d, recursive = TRUE, showWarnings = FALSE); install.packages("renv", lib = d, repos = "https://cloud.r-project.org")'
-	Rscript -e 'renv::restore()' # creates renv/ + .Rprofile + renv.lock
-
+	Rscript -e 'renv::init()' # creates renv/ + .Rprofile + renv.lock
+	Rscript -e 'renv::restore()' 
 clean-renv:
 	rm -rf renv .Rprofile
