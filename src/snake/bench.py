@@ -23,7 +23,7 @@ def write_to_file(results: dict[str, float], file_name: str) -> None:
             resultwriter.writerow(["python", task, elapsed])
 
 
-def time_read() -> float:
+def time_read_all() -> float:
     start = time.perf_counter()
     df, meta = pyreadstat.read_sav(in_file)
     end = time.perf_counter()
@@ -31,10 +31,20 @@ def time_read() -> float:
     logging.info("read took %.4fs", elapsed)
     return elapsed
 
+def time_read_subset() -> float:
+    start = time.perf_counter()
+    df, meta = pyreadstat.read_sav(in_file, usecols=["wage", "person_id"])
+    end = time.perf_counter()
+    elapsed = end - start
+    logging.info("read took %.4fs", elapsed)
+    return elapsed
 
 def main(file_name: str) -> None:
     logging.info("language: python")
-    benchmark_set: dict[str, Callable] = {"read": time_read}
+    benchmark_set: dict[str, Callable] = {
+            "read_all": time_read_all,
+            "read_subset": time_read_subset,
+    }
     logging.info("running benchmarks: %s", list(benchmark_set))
     results = {fn_name: fn() for fn_name, fn in benchmark_set.items()}
     logging.info("writing results to %s", file_name)
