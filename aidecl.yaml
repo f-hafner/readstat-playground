@@ -20,8 +20,15 @@ ai_usage:
     purpose:
     - code analysis
     - code generation
+  - name: deepseek-v4.1-flash
+    vendor: opencode
+    type: agent
+    purpose:
+    - code generation
+    - code analysis
   scope:
     code_completion: true
+    code_generation: true
 declaration:
-  date: '2026-10-16'
+  date: '2026-10-27'
   declared_by: Dr. Duck team member
