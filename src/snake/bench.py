@@ -30,13 +30,13 @@ def get_con():
     con.execute("LOAD 'duckdb-read-stat/build/debug/read_stat.duckdb_extension'")
     return con
 
-def write_to_file(results: dict[str, float], file_name: str) -> None:
+def write_to_file(results: dict[tuple[str, str], float], file_name: str) -> None:
     """Append results in long format."""
     with open(file_name, "a+", newline="") as csvfile:
         resultwriter = csv.writer(csvfile, delimiter=",")
 
-        for task, elapsed in results.items():
-            resultwriter.writerow(["python", task, elapsed])
+        for (task, tool), elapsed in results.items():
+            resultwriter.writerow(["python", task, tool, elapsed])
 
 ### ground truth: pyreadstat - human edited
 def time_read_all() -> float:
@@ -81,11 +81,11 @@ def main(file_name: str) -> None:
             "read_all": time_read_all,
             "read_all_duck": time_read_all_duck,
     }
-    benchmark_set: dict[str, Callable] = {
-            "read_all": time_read_all,
-            "read_subset": time_read_subset,
-            "read_all_duck": time_read_all_duck,
-            "read_subset_duck": time_read_subset_duck,
+    benchmark_set: dict[tuple[str, str], Callable] = {
+            ("read_all", "pyreadstat"): time_read_all,
+            ("read_subset", "pyreadstat"): time_read_subset,
+            ("read_all", "duckdb"): time_read_all_duck,
+            ("read_subset", "duckdb"): time_read_subset_duck,
     }
     logging.info("running warmup (not recorded): %s", list(warmup_set))
     _ = {fn_name: fn() for fn_name, fn in warmup_set.items()}
