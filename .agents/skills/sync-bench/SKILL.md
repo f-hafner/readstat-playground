@@ -43,6 +43,8 @@ changes.
 3. Update the agent-maintained mirrors to match:
    - the `*_duck` functions in `src/snake/bench.py` (one per pyreadstat
      benchmark, added to `benchmark_set` right after its pyreadstat peer),
+   - the warmup sets in `src/snake/bench.py` and `src/RRR/bench.R` (see
+     [Warmup](#warmup)),
    - the R mirror `src/RRR/bench.R`,
    - the SQL mirror `src/duck/bench.sql` and `src/bench/run.sh`,
    using the mapping below.
@@ -88,6 +90,25 @@ changes.
 - SQL: `.timer on`; `run.sh` parses the `Run Time (s): real <seconds> ...`
   lines in query order.
 
+### Warmup
+
+Before the timed benchmarks, Python's `main` runs a `warmup_set` whose results
+are discarded (it currently warms up `read_all` and `read_all_duck`). The R
+mirror reproduces this with its own `warmup_set` list, run via
+`invisible(lapply(warmup_set, function(fn) fn()))`, before `benchmark_set`; R
+only warms up `read_all` because it has no DuckDB variant. Warmup entries never
+appear in the CSV — only `benchmark_set` is written. When adding a benchmark to
+Python's `benchmark_set`, consider whether it also belongs in `warmup_set` and
+mirror that in R.
+
+Both Python and R log each set before running it, labelling the warmup entries
+as `(not recorded)` and the benchmark entries as `(recorded)` so the two are
+never confused in the logs.
+
+The DuckDB SQL mirror (`src/duck/bench.sql` / `run.sh`) has **no warmup**: the
+`duckdb` CLI runs as a fresh process per benchmark run, so there is nothing to
+keep warm across runs.
+
 ### Output format
 
 Long CSV: `language,task,elapsed`, appended to the file passed as the first CLI
@@ -123,6 +144,14 @@ There are two SQL surfaces to keep in sync:
 |-----|---------------------------|-----------------|-----|-----|
 | `read_all` | read every column | `SELECT * FROM read_stat(...)` | read every column | `FROM read_stat(...)` |
 | `read_subset` | `usecols` / `columns_select` | `SELECT wage, person_id ...` | `col_select = c("wage", "person_id")` | `SELECT wage, person_id FROM read_stat(...)` |
+
+### Warmup sets
+
+| Language | Warmup entries | Where |
+|----------|----------------|-------|
+| Python | `read_all`, `read_all_duck` | `warmup_set` in `main` (`src/snake/bench.py`) |
+| R | `read_all` | `warmup_set` in `main` (`src/RRR/bench.R`) |
+| SQL | none | fresh `duckdb` CLI process per run |
 
 ## Notes
 

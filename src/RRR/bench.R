@@ -36,7 +36,7 @@ time_read_all <- function() {
   df <- haven::read_sav(in_file)
   toc_out <- toc(quiet = TRUE)
   elapsed <- unname(toc_out$toc - toc_out$tic)
-  log_info("read took %.4fs", elapsed)
+  log_info("read_all took %.4fs", elapsed)
   elapsed
 }
 
@@ -46,18 +46,25 @@ time_read_subset <- function() {
   df <- haven::read_sav(in_file, col_select = c("wage", "person_id"))
   toc_out <- toc(quiet = TRUE)
   elapsed <- unname(toc_out$toc - toc_out$tic)
-  log_info("read took %.4fs", elapsed)
+  log_info("read_subset took %.4fs", elapsed)
   elapsed
 }
 
 
 main <- function(file_name) {
   log_info("language: R")
+  # Warm up the reader before timing, mirroring the warmup_set in
+  # src/snake/bench.py. Results are discarded.
+  warmup_set <- list(
+    read_all = time_read_all
+  )
+  log_info("running warmup (not recorded): %s", paste(names(warmup_set), collapse = ", "))
+  invisible(lapply(warmup_set, function(fn) fn()))
   benchmark_set <- list(
     read_all = time_read_all,
     read_subset = time_read_subset
   )
-  log_info("running benchmarks: %s", paste(names(benchmark_set), collapse = ", "))
+  log_info("running benchmarks (recorded): %s", paste(names(benchmark_set), collapse = ", "))
   results <- lapply(benchmark_set, function(fn) fn())
   log_info("writing results to %s", file_name)
   write_to_file(results, file_name)
