@@ -44,12 +44,16 @@ log_info <- function(fmt, ...) {
 }
 
 
-write_to_file <- function(results, file_name) {
-  # Append results in long format.
+write_to_file <- function(benchmark_set, results, file_name) {
+  # Append results in long format: language,task,tool,elapsed.
   con <- file(file_name, open = "a")
   on.exit(close(con))
-  for (task in names(results)) {
-    writeLines(paste(c("R", task, results[[task]]), collapse = ","), con)
+  for (i in seq_along(results)) {
+    entry <- benchmark_set[[i]]
+    writeLines(
+      paste(c("R", entry$task, entry$tool, results[[i]]), collapse = ","),
+      con
+    )
   }
 }
 
@@ -116,15 +120,20 @@ main <- function(file_name) {
   log_info("running warmup (not recorded): %s", paste(names(warmup_set), collapse = ", "))
   invisible(lapply(warmup_set, function(fn) fn()))
   benchmark_set <- list(
-    read_all = time_read_all,
-    read_subset = time_read_subset,
-    read_all_duck = time_read_all_duck,
-    read_subset_duck = time_read_subset_duck
+    list(task = "read_all", tool = "haven", fn = time_read_all),
+    list(task = "read_subset", tool = "haven", fn = time_read_subset),
+    list(task = "read_all", tool = "duckdb", fn = time_read_all_duck),
+    list(task = "read_subset", tool = "duckdb", fn = time_read_subset_duck)
   )
-  log_info("running benchmarks (recorded): %s", paste(names(benchmark_set), collapse = ", "))
-  results <- lapply(benchmark_set, function(fn) fn())
+  benchmark_labels <- vapply(
+    benchmark_set,
+    function(entry) sprintf("%s (%s)", entry$task, entry$tool),
+    character(1)
+  )
+  log_info("running benchmarks (recorded): %s", paste(benchmark_labels, collapse = ", "))
+  results <- lapply(benchmark_set, function(entry) entry$fn())
   log_info("writing results to %s", file_name)
-  write_to_file(results, file_name)
+  write_to_file(benchmark_set, results, file_name)
 }
 
 
