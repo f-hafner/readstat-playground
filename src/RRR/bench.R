@@ -7,6 +7,9 @@
 #
 # Required packages (installed in the container, see Dockerfile):
 #   haven, tictoc
+# The reason for the warmup is unexplored, but most likely
+# similar to python: that the haven library imports more libraries
+# when it's called the first time.
 
 library(haven)
 library(tictoc)
