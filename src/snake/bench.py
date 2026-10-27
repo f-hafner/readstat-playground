@@ -1,3 +1,9 @@
+"""Benchmark for python
+
+Warmup is necessary because of runtime imports of polars/pyarrow
+by both duckdb and pyreadstat.
+"""
+
 # /// script
 # dependencies = [
 #   "pyreadstat",
@@ -13,6 +19,7 @@ import time
 from typing import Callable
 import logging
 import duckdb
+
 
 in_file = "data/test_small.sav"
 prs_output_format = "polars"
