@@ -69,13 +69,20 @@ def time_read_subset_duck() -> float:
 
 def main(file_name: str) -> None:
     logging.info("language: python")
-    benchmark_set: dict[str, Callable] = {
+
+    warmup_set: dict[str, Callable] = {
             "read_all": time_read_all,
             "read_all_duck": time_read_all_duck,
+    }
+    benchmark_set: dict[str, Callable] = {
+            "read_all": time_read_all,
             "read_subset": time_read_subset,
+            "read_all_duck": time_read_all_duck,
             "read_subset_duck": time_read_subset_duck,
     }
-    logging.info("running benchmarks: %s", list(benchmark_set))
+    logging.info("running warmup (not recorded): %s", list(warmup_set))
+    _ = {fn_name: fn() for fn_name, fn in warmup_set.items()}
+    logging.info("running benchmarks (recorded): %s", list(benchmark_set))
     results = {fn_name: fn() for fn_name, fn in benchmark_set.items()}
     logging.info("writing results to %s", file_name)
     write_to_file(results, file_name)
