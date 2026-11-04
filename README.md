@@ -51,3 +51,4 @@ For exploring `readstat`:
 
 # Useful docs
 - Unofficial documentation of the `.sav` file format: https://www.gnu.org/software/pspp/pspp-dev/html_node/System-File-Format.html
+- Reverse-engineered SAS7BDAT specification: https://github.com/tk3369/SASLib.jl/blob/master/SAS7BDAT.md
