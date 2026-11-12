@@ -2,7 +2,7 @@
 # Roadmap: Use cases & feature development for duckdb-read-stat
 
 
-## Use cases: mostly around fast I/O for stat file formats
+## Use cases: mostly around fast I/O and filtering (?) for stat file formats
 - Tabular data ingest in dataverse could *potentially* be done by DuckDB
     - Will need more research and understanding of the existing stack
 - Reading large stat files, for instance for registry data (NL, DK)
@@ -24,7 +24,7 @@ merging into upstream later. The benefit is that we can go at our own pace;
 the cost is that the features may not get merged during this project.
 
 Proposed steps:
-1. Upgrade to the (unstable) DuckDB 2.0.0 C API
+1. ~~Upgrade to the (unstable) DuckDB 2.0.0 C API~~ Not planned
 2. Fix some small memory leaks
 3. Merge the PR on column projection
 4. Focus on making loading of stat files as fast as possible
@@ -69,6 +69,7 @@ see [speed on SAS files].
 
 #### Development steps
 
+1. Figure out how to profile the C extension code to see the bottlenecks.
 1. Implement pull-based approach for sas files with a linear scan, following
 discussion in [speed on SAS files]. 
     - Separate parsers for metadata, variables, and values.

@@ -3,6 +3,8 @@
 
 ## General
 - Stages of a DuckDB query and where extensions can hook into -> see Rusty Conover's slides
+    - It's a callback-based system (?), and a specific example of how it 
+    integrates with another library is here: https://github.com/f-hafner/duckdb-read-stat/pull/11#issuecomment-6443380329
 - DuckDB has a file system API; in the C API, has become stable as of v1.5.6
     - Used under the hood for reading from S3 etc
     - Extensions can also use it for doing file system operations
