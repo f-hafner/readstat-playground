@@ -11,28 +11,29 @@ fi
 endef
 
 
-.PHONY: bench build install-duckdb clean-renv native native/skip-columns
+.PHONY: bench build debug release reldebug install-duckdb clean-renv native native/skip-columns
 
 bench:	duckdb-read-stat/build/debug/read_stat.duckdb_extension data/test_small.sav install-duckdb renv
 	mkdir -p results
 	bash src/bench/run.sh results/bench.csv
 
-build: duckdb-read-stat/build/debug/read_stat.duckdb_extension
+build:	debug
 
-duckdb-read-stat/build/debug/read_stat.duckdb_extension:
+debug release reldebug: %: duckdb-read-stat/build/%/read_stat.duckdb_extension duckdb-read-stat/configure/platform.txt
+
+duckdb-read-stat/configure/platform.txt:
 	make -C duckdb-read-stat configure
-	make -C duckdb-read-stat debug
+
+duckdb-read-stat/build/%/read_stat.duckdb_extension:
+	make -C duckdb-read-stat $*
+
+duckdb-read-stat/build/%/libread_stat.so: duckdb-read-stat/configure/platform.txt
+	make -C duckdb-read-stat $*
 
 install-duckdb:
 	@$(call INSTALL_DUCKDB)
 
 native: native/skip-columns 
-
-duckdb-read-stat/configure/platform.txt:
-	make -C duckdb-read-stat configure
-
-duckdb-read-stat/build/debug/libread_stat.so: duckdb-read-stat/configure/platform.txt
-	make -C duckdb-read-stat debug
 
 native/skip-columns: duckdb-read-stat/build/debug/libread_stat.so data/test_small.dta
 	cmake -S src/native/skip-columns -B src/native/skip-columns/build
@@ -46,5 +47,9 @@ renv:
 	Rscript -e 'd <- Sys.getenv("R_LIBS_USER"); dir.create(d, recursive = TRUE, showWarnings = FALSE); install.packages("renv", lib = d, repos = "https://cloud.r-project.org")'
 	Rscript -e 'renv::init()' # creates renv/ + .Rprofile + renv.lock
 	Rscript -e 'renv::restore()' 
+
 clean-renv:
 	rm -rf renv .Rprofile
+
+clean:
+	rm -vf duckdb-read-stat/build/*/{libread_stat.so,read_stat.duckdb_extension}
