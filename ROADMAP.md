@@ -10,6 +10,7 @@
     network file system. Thus, network latency *may* be a factor too, and async IO might eventually
     become interesting (though this needs more research and is currently
     not available in the client APIs AFAIK). See also [async IO in duckdb].
+- Loading stat data files into statistical tools such as JASP
 - Small interactive queries via tabular viewer GUIs (for humans), CLI (for humans and agents)
     - For tabular viewer: load readstat file into a duckdb table and 
     use existing tools (check)
@@ -25,8 +26,8 @@ the cost is that the features may not get merged during this project.
 
 Proposed steps:
 1. ~~Upgrade to the (unstable) DuckDB 2.0.0 C API~~ Not planned
-2. Fix some small memory leaks
-3. Merge the PR on column projection
+2. ~~Fix some small memory leaks~~ Postponed
+3. ~~Merge the PR on column projection~~ Postponed
 4. Focus on making loading of stat files as fast as possible
 
 
